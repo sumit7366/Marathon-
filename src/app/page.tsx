@@ -1,65 +1,317 @@
-import Image from "next/image";
+'use client';
+import { useEffect, useState, Suspense, lazy } from 'react';
+import Link from 'next/link';
+import { motion } from 'framer-motion';
+import EventCard from '@/components/EventCard';
+import CountdownTimer from '@/components/CountdownTimer';
+import { Event } from '@/lib/types';
 
-export default function Home() {
+const HeroScene = lazy(() => import('@/components/HeroScene'));
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.15, duration: 0.6 },
+  }),
+};
+
+export default function HomePage() {
+  const [events, setEvents] = useState<Event[]>([]);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    setIsMobile(window.innerWidth < 768);
+    fetch('/api/events')
+      .then(r => r.json())
+      .then(d => setEvents(d.events || []))
+      .catch(() => {});
+  }, []);
+
+  const upcomingEvent = events.find(e => new Date(e.date) > new Date());
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <div>
+      {/* Hero Section */}
+      <section
+        style={{
+          position: 'relative',
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          overflow: 'hidden',
+          background: 'var(--gradient-hero)',
+        }}
+      >
+        {/* 3D Scene - desktop only */}
+        {!isMobile && (
+          <Suspense fallback={null}>
+            <HeroScene />
+          </Suspense>
+        )}
+
+        {/* Animated gradient overlay for mobile */}
+        {isMobile && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'radial-gradient(circle at 30% 50%, rgba(232,93,4,0.3), transparent 70%)',
+            }}
+          />
+        )}
+
+        <div
+          className="text-center px-4"
+          style={{ position: 'relative', zIndex: 10, maxWidth: '800px' }}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.8, type: 'spring' }}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            <span
+              style={{
+                display: 'inline-block',
+                background: 'rgba(255,255,255,0.1)',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.2)',
+                padding: '8px 20px',
+                borderRadius: '30px',
+                fontSize: '0.85rem',
+                color: 'white',
+                marginBottom: '1.5rem',
+                fontWeight: 500,
+              }}
+            >
+              🏃 Bareilly&apos;s Premier Running Community
+            </span>
+          </motion.div>
+
+          <motion.h1
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.2 }}
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontSize: 'clamp(2.5rem, 6vw, 4.5rem)',
+              fontWeight: 900,
+              color: 'white',
+              lineHeight: 1.1,
+              marginBottom: '1.5rem',
+            }}
           >
-            Documentation
-          </a>
+            Run With <br />
+            <span
+              style={{
+                background: 'linear-gradient(135deg, #f48c06, #faa307)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+              BareillyRunners
+            </span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
+            style={{
+              fontSize: 'clamp(1rem, 2vw, 1.2rem)',
+              color: 'rgba(255,255,255,0.8)',
+              maxWidth: '600px',
+              margin: '0 auto 2rem',
+              lineHeight: 1.6,
+            }}
+          >
+            Join thousands of runners in Bareilly&apos;s biggest marathon events.
+            5K, 10K, and Half Marathon — there&apos;s a race for everyone.
+          </motion.p>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}
+            className="flex flex-col sm:flex-row gap-4 justify-center"
+          >
+            <Link href="/events" className="btn-primary no-underline text-center" style={{ padding: '14px 36px', fontSize: '1.05rem' }}>
+              Explore Events →
+            </Link>
+            <Link
+              href="/gallery"
+              className="no-underline text-center"
+              style={{
+                padding: '14px 36px',
+                fontSize: '1.05rem',
+                borderRadius: '12px',
+                border: '1px solid rgba(255,255,255,0.3)',
+                color: 'white',
+                fontWeight: 600,
+                backdropFilter: 'blur(10px)',
+                background: 'rgba(255,255,255,0.1)',
+              }}
+            >
+              View Gallery
+            </Link>
+          </motion.div>
+
+          {/* Countdown */}
+          {upcomingEvent && (
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              style={{ marginTop: '3rem' }}
+            >
+              <CountdownTimer
+                targetDate={upcomingEvent.date}
+                label={`⏱ Next Event: ${upcomingEvent.name}`}
+              />
+            </motion.div>
+          )}
         </div>
-      </main>
+
+        {/* Scroll indicator */}
+        <motion.div
+          animate={{ y: [0, 10, 0] }}
+          transition={{ repeat: Infinity, duration: 2 }}
+          style={{
+            position: 'absolute',
+            bottom: '2rem',
+            left: '50%',
+            transform: 'translateX(-50%)',
+            color: 'rgba(255,255,255,0.5)',
+            fontSize: '1.5rem',
+          }}
+        >
+          ↓
+        </motion.div>
+      </section>
+
+      {/* How It Works */}
+      <section style={{ padding: '5rem 1rem', background: 'var(--surface)' }}>
+        <div className="max-w-6xl mx-auto">
+          <motion.h2
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+            custom={0}
+            variants={fadeUp}
+            style={{
+              fontFamily: 'var(--font-display)',
+              fontWeight: 800,
+              fontSize: 'clamp(1.8rem, 4vw, 2.5rem)',
+              textAlign: 'center',
+              marginBottom: '3rem',
+            }}
+          >
+            How It <span className="gradient-text">Works</span>
+          </motion.h2>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {[
+              { icon: '📝', title: 'Register', desc: 'Fill the registration form with your details and choose your race category.' },
+              { icon: '📱', title: 'Get QR Code', desc: 'Receive your unique QR code instantly. Show it at the event for entry.' },
+              { icon: '🏁', title: 'Run & Win', desc: 'Show up at the venue, get verified, and run your heart out!' },
+            ].map((step, i) => (
+              <motion.div
+                key={step.title}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true }}
+                custom={i}
+                variants={fadeUp}
+                className="glass"
+                style={{
+                  padding: '2rem',
+                  borderRadius: '20px',
+                  textAlign: 'center',
+                }}
+              >
+                <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>{step.icon}</div>
+                <h3 style={{ fontFamily: 'var(--font-display)', fontWeight: 700, fontSize: '1.2rem', marginBottom: '0.75rem' }}>
+                  Step {i + 1}: {step.title}
+                </h3>
+                <p style={{ color: 'var(--muted)', fontSize: '0.95rem', lineHeight: 1.6 }}>
+                  {step.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Events */}
+      {events.length > 0 && (
+        <section style={{ padding: '5rem 1rem' }}>
+          <div className="max-w-6xl mx-auto">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              custom={0}
+              variants={fadeUp}
+              className="flex justify-between items-center mb-8 flex-wrap gap-4"
+            >
+              <h2
+                style={{
+                  fontFamily: 'var(--font-display)',
+                  fontWeight: 800,
+                  fontSize: 'clamp(1.8rem, 4vw, 2.5rem)',
+                }}
+              >
+                Upcoming <span className="gradient-text">Events</span>
+              </h2>
+              <Link href="/events" className="btn-secondary no-underline">
+                View All →
+              </Link>
+            </motion.div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {events.slice(0, 3).map((event, i) => (
+                <EventCard key={event.id} event={event} index={i} />
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Stats Banner */}
+      <section
+        style={{
+          padding: '4rem 1rem',
+          background: 'var(--gradient-primary)',
+        }}
+      >
+        <div className="max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+            {[
+              { value: '500+', label: 'Runners' },
+              { value: '10+', label: 'Events' },
+              { value: '5+', label: 'Cities' },
+              { value: '100%', label: 'Satisfaction' },
+            ].map((stat, i) => (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, scale: 0.5 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, type: 'spring' }}
+              >
+                <div style={{ fontFamily: 'var(--font-display)', fontWeight: 900, fontSize: 'clamp(1.8rem, 4vw, 2.5rem)', color: 'white' }}>
+                  {stat.value}
+                </div>
+                <div style={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', fontWeight: 500 }}>
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
     </div>
   );
 }
