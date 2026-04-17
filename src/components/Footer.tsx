@@ -64,14 +64,15 @@ export default function Footer() {
                 style={{ color: '#25d34bff', textDecoration: 'none', cursor: 'pointer' }}
               >
                 📍 Bareilly, Uttar Pradesh
-              </a>              <a
+              </a>              
+              {/* <a
                 href="mailto:contact@bareillyrunners.com"
                 style={{ color: '#25D366', textDecoration: 'none', cursor: 'pointer' }}
               >
                 📧 contact@bareillyrunners.com
-              </a>
+              </a> */}
               <a
-                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919876543210'}`}
+                href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919557522009'}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#25D366', textDecoration: 'none' }}

@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 
 export default function WhatsAppButton() {
-  const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919876543210';
+  const phone = process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '919557522009';
   return (
     <motion.a
       href={`https://wa.me/${phone}?text=Hi! I want to know about BareillyRunners events.`}
